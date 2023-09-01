@@ -95,8 +95,7 @@ public class PostsAdapter extends FirestoreRecyclerAdapter<Post,PostsAdapter.Vie
             imageViewPost = view.findViewById(R.id.imageViewPostCard);
             mtxtUsernameCreador = view.findViewById(R.id.txtUsernameCreador);
             ViewHolder =view;
-            String hola;
-            hola = "";
+    
 
         }
 
