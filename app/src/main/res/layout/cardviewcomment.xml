@@ -10,12 +10,20 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center">
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/CircleImageComment"
+                android:layout_width="45dp"
+                android:layout_height="45dp"
+                android:src="@drawable/ic_person_oscuro"
+                app:civ_circle_background_color="@color/Grisclar"/>
+
+        </FrameLayout>
         
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/CircleImageComment"
-            android:layout_width="45dp"
-            android:layout_height="45dp"
-            android:src="@drawable/cover_image"/>
+
         
         <androidx.cardview.widget.CardView
             android:layout_width="wrap_content"
@@ -45,7 +53,6 @@
                     android:id="@+id/txtComentarioUs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Descripcion comentario"
                     android:layout_marginLeft="3dp"/>
                 
             </LinearLayout>

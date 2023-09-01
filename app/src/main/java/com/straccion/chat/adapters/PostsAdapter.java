@@ -26,6 +26,7 @@ import com.straccion.chat.R;
 import com.straccion.chat.activities.PostDetailActivity;
 import com.straccion.chat.models.Like;
 import com.straccion.chat.models.Post;
+import com.straccion.chat.providers.AuthProvider;
 import com.straccion.chat.providers.LikesProvider;
 import com.straccion.chat.providers.PostProvider;
 import com.straccion.chat.providers.UserProvider;
@@ -37,12 +38,14 @@ public class PostsAdapter extends FirestoreRecyclerAdapter<Post,PostsAdapter.Vie
     Context contexto;
     UserProvider mUserProvider;
     LikesProvider mLikesProvider;
+    AuthProvider mAuthProvider;
 
     public PostsAdapter(FirestoreRecyclerOptions<Post> options, Context context){
         super(options);
         this.contexto = context;
         mUserProvider = new UserProvider();
         mLikesProvider = new LikesProvider();
+        mAuthProvider = new AuthProvider();
     }
 
     @Override
@@ -72,7 +75,7 @@ public class PostsAdapter extends FirestoreRecyclerAdapter<Post,PostsAdapter.Vie
             public void onClick(View v) {
 
                 Like like = new Like();
-                like.setIdUser(post.getIdUser());
+                like.setIdUser(mAuthProvider.getUid());
                 like.setIdPost(postId);
                 like.setTimestamp(new Date().getTime());
                 like(like, holder);
@@ -82,6 +85,7 @@ public class PostsAdapter extends FirestoreRecyclerAdapter<Post,PostsAdapter.Vie
 
         getUserInfo(post.getIdUser(), holder);
         getNumberLikesByPost(postId, holder);
+        checkifExistLike(postId, mAuthProvider.getUid(), holder);
     }
 
     private void getNumberLikesByPost(String idPost, ViewHolder holder){
@@ -94,7 +98,7 @@ public class PostsAdapter extends FirestoreRecyclerAdapter<Post,PostsAdapter.Vie
         });
     }
     private void like(Like like, ViewHolder holder) {
-        mLikesProvider.getLikeByPostAndUser(like.getIdPost(), like.getIdUser()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+        mLikesProvider.getLikeByPostAndUser(like.getIdPost(), mAuthProvider.getUid()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
             public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                 int numberDocuments = queryDocumentSnapshots.size();
@@ -105,6 +109,20 @@ public class PostsAdapter extends FirestoreRecyclerAdapter<Post,PostsAdapter.Vie
                 }else {
                     holder.mimageViewLike.setImageResource(R.drawable.icon_like_blue);
                     mLikesProvider.create(like);
+                }
+            }
+        });
+    }
+
+    private void checkifExistLike(String idPost, String idUser, ViewHolder holder) {
+        mLikesProvider.getLikeByPostAndUser(idPost, idUser).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                int numberDocuments = queryDocumentSnapshots.size();
+                if (numberDocuments > 0){
+                    holder.mimageViewLike.setImageResource(R.drawable.icon_like_blue);
+                }else {
+                    holder.mimageViewLike.setImageResource(R.drawable.icon_like_gris);
                 }
             }
         });
