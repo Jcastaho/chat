@@ -2,7 +2,9 @@ package com.straccion.chat.providers;
 
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.straccion.chat.models.Like;
 
 public class LikesProvider {
@@ -14,6 +16,21 @@ public class LikesProvider {
     }
 
     public Task<Void> create (Like like){
-        return mCollection.document().set(like);
+        DocumentReference document = mCollection.document();
+        String id = document.getId();
+        like.setId(id);
+        return document.set(like);
+    }
+
+    public Query getLikesByPost(String idPost){
+        return mCollection.whereEqualTo("idPost", idPost);
+    }
+
+    public Query getLikeByPostAndUser(String  idPost, String idUser){
+        return mCollection.whereEqualTo("idPost", idPost).whereEqualTo("idUser", idUser);
+    }
+
+    public Task<Void> delete(String id){
+        return mCollection.document(id).delete();
     }
 }

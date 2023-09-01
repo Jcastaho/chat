@@ -9,30 +9,40 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 
 import com.straccion.chat.R;
 import com.straccion.chat.activities.PostDetailActivity;
+import com.straccion.chat.models.Like;
 import com.straccion.chat.models.Post;
+import com.straccion.chat.providers.LikesProvider;
 import com.straccion.chat.providers.PostProvider;
 import com.straccion.chat.providers.UserProvider;
+
+import java.util.Date;
 
 public class PostsAdapter extends FirestoreRecyclerAdapter<Post,PostsAdapter.ViewHolder> {
 
     Context contexto;
     UserProvider mUserProvider;
+    LikesProvider mLikesProvider;
 
     public PostsAdapter(FirestoreRecyclerOptions<Post> options, Context context){
         super(options);
         this.contexto = context;
         mUserProvider = new UserProvider();
+        mLikesProvider = new LikesProvider();
     }
 
     @Override
@@ -57,7 +67,47 @@ public class PostsAdapter extends FirestoreRecyclerAdapter<Post,PostsAdapter.Vie
             }
         });
 
+        holder.mimageViewLike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Like like = new Like();
+                like.setIdUser(post.getIdUser());
+                like.setIdPost(postId);
+                like.setTimestamp(new Date().getTime());
+                like(like, holder);
+            }
+        });
+
+
         getUserInfo(post.getIdUser(), holder);
+        getNumberLikesByPost(postId, holder);
+    }
+
+    private void getNumberLikesByPost(String idPost, ViewHolder holder){
+        mLikesProvider.getLikesByPost(idPost).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                int numbreLikes = value.size();
+                holder.mtxtLikes.setText(String.valueOf(numbreLikes) + " Me Gusta");
+            }
+        });
+    }
+    private void like(Like like, ViewHolder holder) {
+        mLikesProvider.getLikeByPostAndUser(like.getIdPost(), like.getIdUser()).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                int numberDocuments = queryDocumentSnapshots.size();
+                if (numberDocuments > 0){
+                    String idLike = queryDocumentSnapshots.getDocuments().get(0).getId();
+                    holder.mimageViewLike.setImageResource(R.drawable.icon_like_gris);
+                    mLikesProvider.delete(idLike);
+                }else {
+                    holder.mimageViewLike.setImageResource(R.drawable.icon_like_blue);
+                    mLikesProvider.create(like);
+                }
+            }
+        });
     }
 
     private void getUserInfo(String idUser, ViewHolder holder) {
