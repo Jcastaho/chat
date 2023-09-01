@@ -85,7 +85,9 @@ public class PostsAdapter extends FirestoreRecyclerAdapter<Post,PostsAdapter.Vie
         TextView txtViewTitle;
         TextView txtViewDescription;
         TextView mtxtUsernameCreador;
+        TextView mtxtLikes;
         ImageView imageViewPost;
+        ImageView mimageViewLike;
         View ViewHolder;
 
         public ViewHolder(View view){
@@ -94,9 +96,9 @@ public class PostsAdapter extends FirestoreRecyclerAdapter<Post,PostsAdapter.Vie
             txtViewDescription = view.findViewById(R.id.txtViewDescripcionPostCard);
             imageViewPost = view.findViewById(R.id.imageViewPostCard);
             mtxtUsernameCreador = view.findViewById(R.id.txtUsernameCreador);
+            mtxtLikes = view.findViewById(R.id.txtLikes);
+            mimageViewLike = view.findViewById(R.id.imageViewLike);
             ViewHolder =view;
-
-
         }
 
     }
