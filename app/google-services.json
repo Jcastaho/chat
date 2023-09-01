@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "633372277515",
+    "project_id": "social-551c9",
+    "storage_bucket": "social-551c9.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:633372277515:android:ea211f228974f5dcf5000e",
+        "android_client_info": {
+          "package_name": "com.straccion.chat"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "633372277515-vj4me9jqgnitm6spi62tds6d2sddf9vr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiegN08rJXTXiiVRcV7LYhes320n_WCgE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "633372277515-vj4me9jqgnitm6spi62tds6d2sddf9vr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
