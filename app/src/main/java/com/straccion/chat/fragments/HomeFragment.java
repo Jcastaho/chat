@@ -93,6 +93,7 @@ public class HomeFragment extends Fragment {
         mFab = mView.findViewById(R.id.fab);
         mToolbar = mView.findViewById(R.id.toolbars);
         mRecyclerViews = mView.findViewById(R.id.recyclerViewHome);
+
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
         mRecyclerViews.setLayoutManager(linearLayoutManager);
 

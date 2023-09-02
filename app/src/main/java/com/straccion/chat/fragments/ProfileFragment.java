@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,12 +14,17 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 import com.straccion.chat.R;
 import com.straccion.chat.activities.EditarPerfilActivity;
+import com.straccion.chat.adapters.MyPostsAdapter;
+import com.straccion.chat.adapters.PostsAdapter;
+import com.straccion.chat.models.Post;
 import com.straccion.chat.providers.AuthProvider;
 import com.straccion.chat.providers.PostProvider;
 import com.straccion.chat.providers.UserProvider;
@@ -34,7 +41,9 @@ public class ProfileFragment extends Fragment {
     UserProvider mUserProvider;
     AuthProvider mAuthProvider;
     PostProvider mPostProvider;
-    
+    RecyclerView mrecyclerMyPost;
+    MyPostsAdapter mAdapter;
+
 
 
     LinearLayout mLinearLayoutEditProfile;
@@ -76,7 +85,12 @@ public class ProfileFragment extends Fragment {
         mtxtEmail = mView.findViewById(R.id.txtEmail);
         mimageCover = mView.findViewById(R.id.imageCover);
         mImagePerfil = mView.findViewById(R.id.ImagePerfil);
+        mrecyclerMyPost = mView.findViewById(R.id.recyclerMyPost);
         mtxtNumberPublicaciones = mView.findViewById(R.id.txtNumberPublicaciones);
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        mrecyclerMyPost.setLayoutManager(linearLayoutManager);
+
         mLinearLayoutEditProfile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -90,6 +104,23 @@ public class ProfileFragment extends Fragment {
         getUser();
         getPosNumber();
         return mView;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Query query = mPostProvider.getPostByUser(mAuthProvider.getUid());
+        FirestoreRecyclerOptions<Post> options =
+                new FirestoreRecyclerOptions.Builder<Post>().setQuery(query, Post.class).build();
+        mAdapter = new MyPostsAdapter(options, getContext());
+        mrecyclerMyPost.setAdapter(mAdapter);
+        mAdapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mAdapter.stopListening();
     }
 
     @Override
