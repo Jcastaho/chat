@@ -34,6 +34,7 @@ public class ProfileFragment extends Fragment {
     UserProvider mUserProvider;
     AuthProvider mAuthProvider;
     PostProvider mPostProvider;
+    
 
 
     LinearLayout mLinearLayoutEditProfile;
