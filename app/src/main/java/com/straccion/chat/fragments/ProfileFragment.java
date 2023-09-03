@@ -1,8 +1,10 @@
 package com.straccion.chat.fragments;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,6 +19,8 @@ import android.widget.TextView;
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
@@ -52,6 +56,8 @@ public class ProfileFragment extends Fragment {
     TextView mtxtEmail;
     ImageView mimageCover;
     TextView mtxtNumberPublicaciones;
+    TextView mtxtPostExist;
+
     CircleImageView mImagePerfil;
 
 
@@ -86,6 +92,7 @@ public class ProfileFragment extends Fragment {
         mimageCover = mView.findViewById(R.id.imageCover);
         mImagePerfil = mView.findViewById(R.id.ImagePerfil);
         mrecyclerMyPost = mView.findViewById(R.id.recyclerMyPost);
+        mtxtPostExist = mView.findViewById(R.id.txtPostExist);
         mtxtNumberPublicaciones = mView.findViewById(R.id.txtNumberPublicaciones);
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
@@ -103,7 +110,25 @@ public class ProfileFragment extends Fragment {
         mAuthProvider = new AuthProvider();
         getUser();
         getPosNumber();
+        checkIfExistPost();
         return mView;
+    }
+
+    private void checkIfExistPost() {
+        mPostProvider.getPostByUser(mAuthProvider.getUid()).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                int numberPost = value.size();
+                if (numberPost > 0){
+                    mtxtPostExist.setText("Publicaciones");
+                    mtxtPostExist.setTextColor(Color.RED);
+                }
+                else {
+                    mtxtPostExist.setText("No hay publicaciones");
+                    mtxtPostExist.setTextColor(Color.GRAY);
+                }
+            }
+        });
     }
 
     @Override

@@ -1,18 +1,28 @@
 package com.straccion.chat.activities;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 import com.straccion.chat.R;
+import com.straccion.chat.adapters.MyPostsAdapter;
+import com.straccion.chat.models.Post;
 import com.straccion.chat.providers.AuthProvider;
 import com.straccion.chat.providers.PostProvider;
 import com.straccion.chat.providers.UserProvider;
@@ -24,7 +34,10 @@ public class UserProfileActivity extends AppCompatActivity {
     UserProvider mUserProvider;
     AuthProvider mAuthProvider;
     PostProvider mPostProvider;
+    MyPostsAdapter mAdapter;
 
+
+    RecyclerView mrecyclerMyPost;
     TextView mtxtPhone;
     TextView mtxtUsername;
     TextView mtxtEmail;
@@ -32,6 +45,7 @@ public class UserProfileActivity extends AppCompatActivity {
     TextView mtxtNumberPublicaciones;
     CircleImageView mImagePerfil;
     CircleImageView mcircleBack;
+    TextView mtxtPostExist;
     String mExtraIdUser;
 
     @Override
@@ -50,6 +64,15 @@ public class UserProfileActivity extends AppCompatActivity {
         mImagePerfil = findViewById(R.id.ImagePerfil);
         mtxtNumberPublicaciones = findViewById(R.id.txtNumberPublicaciones);
         mcircleBack = findViewById(R.id.circleBack);
+        mtxtPostExist = findViewById(R.id.txtPostExist);
+
+        mrecyclerMyPost = findViewById(R.id.recyclerMyPost);
+
+
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(UserProfileActivity.this);
+        mrecyclerMyPost.setLayoutManager(linearLayoutManager);
+
+
         mcircleBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -59,6 +82,7 @@ public class UserProfileActivity extends AppCompatActivity {
         mExtraIdUser = getIntent().getStringExtra("idUser");
         getUser();
         getPosNumber();
+        checkIfExistPost();
     }
 
     private void getUser(){
@@ -98,6 +122,42 @@ public class UserProfileActivity extends AppCompatActivity {
             }
         });
     }
+
+
+    private void checkIfExistPost() {
+        mPostProvider.getPostByUser(mExtraIdUser).addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
+                int numberPost = value.size();
+                if (numberPost > 0){
+                    mtxtPostExist.setText("Publicaciones");
+                    mtxtPostExist.setTextColor(Color.RED);
+                }
+                else {
+                    mtxtPostExist.setText("No hay publicaciones");
+                    mtxtPostExist.setTextColor(Color.GRAY);
+                }
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Query query = mPostProvider.getPostByUser(mExtraIdUser);
+        FirestoreRecyclerOptions<Post> options =
+                new FirestoreRecyclerOptions.Builder<Post>().setQuery(query, Post.class).build();
+        mAdapter = new MyPostsAdapter(options, UserProfileActivity.this);
+        mrecyclerMyPost.setAdapter(mAdapter);
+        mAdapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mAdapter.stopListening();
+    }
+
 
     private void getPosNumber(){
         mPostProvider.getPostByUser(mExtraIdUser).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
