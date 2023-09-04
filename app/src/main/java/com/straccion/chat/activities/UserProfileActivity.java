@@ -1,16 +1,22 @@
 package com.straccion.chat.activities;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.appcompat.widget.ToolbarWidgetWrapper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
 import android.graphics.Color;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -44,7 +50,7 @@ public class UserProfileActivity extends AppCompatActivity {
     ImageView mimageCover;
     TextView mtxtNumberPublicaciones;
     CircleImageView mImagePerfil;
-    CircleImageView mcircleBack;
+    Toolbar mToolbar;
     TextView mtxtPostExist;
     String mExtraIdUser;
 
@@ -63,22 +69,17 @@ public class UserProfileActivity extends AppCompatActivity {
         mimageCover = findViewById(R.id.imageCover);
         mImagePerfil = findViewById(R.id.ImagePerfil);
         mtxtNumberPublicaciones = findViewById(R.id.txtNumberPublicaciones);
-        mcircleBack = findViewById(R.id.circleBack);
-        mtxtPostExist = findViewById(R.id.txtPostExist);
-
         mrecyclerMyPost = findViewById(R.id.recyclerMyPost);
-
-
+        mtxtPostExist = findViewById(R.id.txtPostExist);
+        mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(UserProfileActivity.this);
         mrecyclerMyPost.setLayoutManager(linearLayoutManager);
 
 
-        mcircleBack.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+
         mExtraIdUser = getIntent().getStringExtra("idUser");
         getUser();
         getPosNumber();
@@ -167,5 +168,13 @@ public class UserProfileActivity extends AppCompatActivity {
                 mtxtNumberPublicaciones.setText(String.valueOf(Numero));
             }
         });
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == android.R.id.home){
+            finish();
+        }
+        return true;
     }
 }

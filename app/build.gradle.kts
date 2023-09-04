@@ -44,7 +44,6 @@ dependencies {
     implementation ("com.firebaseui:firebase-ui-firestore:8.0.2")
     implementation ("com.github.smarteist:autoimageslider:1.4.0")
 
-
     implementation(platform("com.google.firebase:firebase-bom:32.2.2"))
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.android.gms:play-services-auth:20.6.0")
