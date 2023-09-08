@@ -42,14 +42,14 @@
             android:textStyle="italic"
             android:textColor="@color/red"/>
 
+
         <TextView
             android:id="@+id/txtViewDescripcionPostCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_margin="10dp"
-            android:maxLines="2"/>
-        
-        
+            android:maxLines="2" />
+
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"

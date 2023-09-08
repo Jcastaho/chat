@@ -1,7 +1,9 @@
 package com.straccion.chat.fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.straccion.chat.R;
+import com.straccion.chat.activities.FiltersActivity;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -16,6 +19,13 @@ import com.straccion.chat.R;
  * create an instance of this fragment.
  */
 public class FiltersFragment extends Fragment {
+
+    View mView;
+    CardView mcardviewNintendo;
+    CardView mcardviewXBOX;
+    CardView mcardviewPS4;
+    CardView mcardviewPC;
+
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,7 +70,44 @@ public class FiltersFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_filters, container, false);
+
+        mView = inflater.inflate(R.layout.fragment_filters, container, false);
+        mcardviewPC = mView.findViewById(R.id.cardviewPC);
+        mcardviewNintendo = mView.findViewById(R.id.cardviewNintendo);
+        mcardviewXBOX = mView.findViewById(R.id.cardviewXBOX);
+        mcardviewPS4 = mView.findViewById(R.id.cardviewPS4);
+
+        mcardviewPS4.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToFilterActivity("PS4");
+            }
+        });
+        mcardviewXBOX.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToFilterActivity("XBOX");
+            }
+        });
+        mcardviewNintendo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToFilterActivity("NINTENDO");
+            }
+        });
+        mcardviewPC.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToFilterActivity("PC");
+            }
+        });
+
+        return mView;
+    }
+
+    private void goToFilterActivity(String category){
+        Intent intent = new Intent(getContext(), FiltersActivity.class);
+        intent.putExtra("categoria", category);
+        startActivity(intent);
     }
 }

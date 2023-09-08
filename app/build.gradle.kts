@@ -43,6 +43,8 @@ dependencies {
     implementation ("androidx.legacy:legacy-support-v4:1.0.0")
     implementation ("com.firebaseui:firebase-ui-firestore:8.0.2")
     implementation ("com.github.smarteist:autoimageslider:1.4.0")
+    implementation ("com.github.mancj:MaterialSearchBar:0.8.5")
+    implementation ("com.google.firebase:firebase-messaging:23.2.1")
 
     implementation(platform("com.google.firebase:firebase-bom:32.2.2"))
     implementation("com.google.firebase:firebase-firestore")

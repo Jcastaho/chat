@@ -32,4 +32,11 @@ public class PostProvider {
         return mCollection.document(id).delete();
     }
 
+    public Query getPostByCategoryAndTimestamp(String category){
+        return mCollection.whereEqualTo("categoria", category).orderBy("timestamp", Query.Direction.DESCENDING); }
+
+    public Query getPostByTitle(String titulo){
+        return mCollection.orderBy("titulo").startAt(titulo).endAt(titulo+'\uf8ff');
+    }
+
 }

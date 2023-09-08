@@ -3,6 +3,7 @@ package com.straccion.chat.activities;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -76,10 +77,10 @@ public class PostDetailActivity extends AppCompatActivity {
     TextView mtxtNombreCategoria;
     TextView mtxtDescripcionDetail;
     TextView mtxtTituloJuego;
+    Toolbar mToolbar;
     TextView mtxtViewRelativeTime;
     TextView mtxtnumLikes;
 
-    CircleImageView mcircleVolverDetail;
     RecyclerView mrecyclerViewComments;
     String idUser="";
 
@@ -97,23 +98,20 @@ public class PostDetailActivity extends AppCompatActivity {
         mtxtNombreCategoria = findViewById(R.id.txtNombreCategoria);
         mtxtDescripcionDetail = findViewById(R.id.txtDescripcionDetail);
         mtxtTituloJuego = findViewById(R.id.txtTituloJuego);
-        mcircleVolverDetail = findViewById(R.id.circleVolverDetail);
         mbtnVerPerfil = findViewById(R.id.btnVerPerfil);
         mSliderView = findViewById(R.id.imageSlider);
         mfabComments = findViewById(R.id.fabComments);
         mtxtViewRelativeTime = findViewById(R.id.txtViewRelativeTime);
+
         mtxtnumLikes = findViewById(R.id.txtnumLikes);
         mrecyclerViewComments = findViewById(R.id.recyclerViewComments);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(PostDetailActivity.this);
         mrecyclerViewComments.setLayoutManager(linearLayoutManager);
+        mToolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(mToolbar);
+        getSupportActionBar().setTitle("");
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-
-        mcircleVolverDetail.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
 
         mfabComments.setOnClickListener(new View.OnClickListener() {
             @Override
