@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -20,6 +21,7 @@ import android.widget.TextView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -44,6 +46,7 @@ public class UserProfileActivity extends AppCompatActivity {
 
 
     RecyclerView mrecyclerMyPost;
+    FloatingActionButton mFabChat;
     TextView mtxtPhone;
     TextView mtxtUsername;
     TextView mtxtEmail;
@@ -71,6 +74,7 @@ public class UserProfileActivity extends AppCompatActivity {
         mtxtNumberPublicaciones = findViewById(R.id.txtNumberPublicaciones);
         mrecyclerMyPost = findViewById(R.id.recyclerMyPost);
         mtxtPostExist = findViewById(R.id.txtPostExist);
+        mFabChat = findViewById(R.id.fabchat);
         mToolbar = findViewById(R.id.toolbar);
         setSupportActionBar(mToolbar);
         getSupportActionBar().setTitle("");
@@ -81,9 +85,28 @@ public class UserProfileActivity extends AppCompatActivity {
 
 
         mExtraIdUser = getIntent().getStringExtra("idUser");
+        if (mAuthProvider.getUid().equals(mExtraIdUser)){
+            mFabChat.setVisibility(View.GONE);
+        }
+
+        mFabChat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToChatActivity();
+            }
+        });
+
+
         getUser();
         getPosNumber();
         checkIfExistPost();
+    }
+
+    private void goToChatActivity() {
+        Intent intent = new Intent(UserProfileActivity.this, ChatActivity.class);
+        intent.putExtra("idUser1", mAuthProvider.getUid());
+        intent.putExtra("idUser2", mExtraIdUser);
+        startActivity(intent);
     }
 
     private void getUser(){

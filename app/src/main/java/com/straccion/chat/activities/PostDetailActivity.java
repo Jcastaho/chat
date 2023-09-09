@@ -41,20 +41,29 @@ import com.straccion.chat.adapters.CommentAdapter;
 import com.straccion.chat.adapters.PostsAdapter;
 import com.straccion.chat.adapters.SliderAdapter;
 import com.straccion.chat.models.Comments;
+import com.straccion.chat.models.FCMBody;
+import com.straccion.chat.models.FCMResponse;
 import com.straccion.chat.models.Post;
 import com.straccion.chat.models.SliderItem;
 import com.straccion.chat.providers.AuthProvider;
 import com.straccion.chat.providers.LikesProvider;
+import com.straccion.chat.providers.NotificationProvider;
 import com.straccion.chat.providers.PostProvider;
 import com.straccion.chat.providers.PostsComments;
+import com.straccion.chat.providers.TokenProvider;
 import com.straccion.chat.providers.UserProvider;
 import com.straccion.chat.utils.RelativeTime;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import de.hdodenhof.circleimageview.CircleImageView;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 public class PostDetailActivity extends AppCompatActivity {
 
@@ -68,6 +77,8 @@ public class PostDetailActivity extends AppCompatActivity {
     AuthProvider mAuthProvider;
     CommentAdapter mAdapter;
     LikesProvider mLikesProvider;
+    NotificationProvider mNotificationProvider;
+    TokenProvider mTokenProvider;
 
     ImageView mImagenViewCategoria;
     CircleImageView mcircleImageDetail;
@@ -132,6 +143,8 @@ public class PostDetailActivity extends AppCompatActivity {
         mPostProvider = new PostProvider();
         mUserProvider = new UserProvider();
         mLikesProvider = new LikesProvider();
+        mTokenProvider = new TokenProvider();
+        mNotificationProvider = new NotificationProvider();
         mExtraPosId = getIntent().getStringExtra("idUser");
 
         getPost();
@@ -218,9 +231,52 @@ public class PostDetailActivity extends AppCompatActivity {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
                 if (task.isSuccessful()){
+                    sendNotification(value);
                     Toast.makeText(PostDetailActivity.this, "El comentario se creo correctamente", Toast.LENGTH_SHORT).show();
                 }else {
                     Toast.makeText(PostDetailActivity.this, "No fue creado correctamente", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private void sendNotification(String value) {
+        if (idUser == null){
+            return;
+        }
+        mTokenProvider.getToken(idUser).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()){
+                    if (documentSnapshot.contains("token")){
+                        String token = documentSnapshot.getString("token");
+                        Map<String, String> data = new HashMap<>();
+                        data.put("title", "NUEVO COMENTARIO");
+                        data.put("body", value);
+                        FCMBody body = new FCMBody(token, "high", "4500s", data);
+                        mNotificationProvider.sendNotification(body).enqueue(new Callback<FCMResponse>() {
+                            @Override
+                            public void onResponse(Call<FCMResponse> call, Response<FCMResponse> response) {
+                                if (response.body() != null){
+                                    if (response.body().getSucces() == 0){//1
+                                        Toast.makeText(PostDetailActivity.this, "La notificacion se envio correctamente", Toast.LENGTH_SHORT).show();
+                                    }else {
+                                        Toast.makeText(PostDetailActivity.this, "La notificacion no se pudo enviarrr", Toast.LENGTH_SHORT).show();
+                                    }
+                                }else {
+                                    Toast.makeText(PostDetailActivity.this, "La notificacion no se pudo enviar", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+
+                            @Override
+                            public void onFailure(Call<FCMResponse> call, Throwable t) {
+
+                            }
+                        });
+                    }
+                }
+                else {
+                    Toast.makeText(PostDetailActivity.this, "El token de notificaciones del usuario no existe", Toast.LENGTH_SHORT).show();
                 }
             }
         });
