@@ -14,10 +14,14 @@ import com.straccion.chat.fragments.ChatsFragment;
 import com.straccion.chat.fragments.FiltersFragment;
 import com.straccion.chat.fragments.HomeFragment;
 import com.straccion.chat.fragments.ProfileFragment;
+import com.straccion.chat.providers.AuthProvider;
+import com.straccion.chat.providers.TokenProvider;
 
 public class HomeActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigation;
+    TokenProvider mTokenProvider;
+    AuthProvider mAuthProvider;
 
 
     @Override
@@ -27,24 +31,28 @@ public class HomeActivity extends AppCompatActivity {
 
         bottomNavigation = findViewById(R.id.bottomNavigationView);
         bottomNavigation.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
+        mTokenProvider = new TokenProvider();
+        mAuthProvider = new AuthProvider();
         openFragment(new HomeFragment());
+        createToken();
 
     }
-/**
- *
- */
 
-     public void openFragment(Fragment fragment) {
-         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
-         transaction.replace(R.id.container, fragment);
-         transaction.addToBackStack(null);
-         transaction.commit();
-     }
+    /**
+     *
+     */
+
+    public void openFragment(Fragment fragment) {
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.replace(R.id.container, fragment);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
 
 
     BottomNavigationView.OnNavigationItemSelectedListener navigationItemSelectedListener =
             item -> {
-                if (item.getItemId() == R.id.itemHome){
+                if (item.getItemId() == R.id.itemHome) {
                     openFragment(new HomeFragment());
                 } else if (item.getItemId() == R.id.itemChat) {
                     openFragment(new ChatsFragment());
@@ -55,6 +63,11 @@ public class HomeActivity extends AppCompatActivity {
                 }
                 return true;
             };
+
+    private void createToken(){
+        mTokenProvider.create(mAuthProvider.getUid());
+    }
+
 
 
 }

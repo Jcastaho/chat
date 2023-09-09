@@ -45,6 +45,9 @@ dependencies {
     implementation ("com.github.smarteist:autoimageslider:1.4.0")
     implementation ("com.github.mancj:MaterialSearchBar:0.8.5")
     implementation ("com.google.firebase:firebase-messaging:23.2.1")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-scalars:2.9.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
 
     implementation(platform("com.google.firebase:firebase-bom:32.2.2"))
     implementation("com.google.firebase:firebase-firestore")
