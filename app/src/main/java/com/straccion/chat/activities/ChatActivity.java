@@ -61,6 +61,8 @@ public class ChatActivity extends AppCompatActivity {
     ImageView mimageViewBack;
     RecyclerView mrecyclerViewMessage;
 
+    LinearLayoutManager mLinearLayoutManager;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +78,9 @@ public class ChatActivity extends AppCompatActivity {
         mimageViewSendMessage = findViewById(R.id.imageViewSendMessage);
         mtxtEditMessaje = findViewById(R.id.txtEditMessaje);
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ChatActivity.this);
-        mrecyclerViewMessage.setLayoutManager(linearLayoutManager);
+        mLinearLayoutManager = new LinearLayoutManager(ChatActivity.this);
+        mLinearLayoutManager.setStackFromEnd(false);
+        mrecyclerViewMessage.setLayoutManager(mLinearLayoutManager);
 
 
         mExtraIdUser1 = getIntent().getStringExtra("idUser1");

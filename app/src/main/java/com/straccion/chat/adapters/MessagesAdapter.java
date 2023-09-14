@@ -6,9 +6,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.firebase.ui.firestore.FirestoreRecyclerAdapter;
@@ -46,6 +49,30 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
         holder.mtxtviewMessage.setText(message.getMessage());
         String relativeTime = RelativeTime.getTimeAgo(message.getTimestamp(), contexto);
         holder.mtxtDateMessage.setText(relativeTime);
+
+        if (message.getIdsender().equals(mAuthProvider.getUid())){
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            params.setMargins(150, 0, 0, 0);
+            holder.mlinearLayouthMessage.setLayoutParams(params);
+            holder.mlinearLayouthMessage.setPadding(30,20,25,20);
+            holder.mlinearLayouthMessage.setBackground(ResourcesCompat.getDrawable(contexto.getResources(), R.drawable.rounded_linear_layout, null));
+            holder.mimageViewedMessage.setVisibility(View.VISIBLE);
+        }else {
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+            );
+            params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+            params.setMargins(0, 0, 150, 0);
+            holder.mlinearLayouthMessage.setLayoutParams(params);
+            holder.mlinearLayouthMessage.setPadding(30,20,-40,20);
+            holder.mlinearLayouthMessage.setBackground(ResourcesCompat.getDrawable(contexto.getResources(), R.drawable.rounded_linear_layout_grey, null));
+            holder.mimageViewedMessage.setVisibility(View.INVISIBLE);
+        }
     }
 
     @NonNull
@@ -60,6 +87,7 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
         TextView mtxtviewMessage;
         TextView mtxtDateMessage;
         ImageView mimageViewedMessage;
+        LinearLayout mlinearLayouthMessage;
         View viewHolder;
 
         public ViewHolder(View view){
@@ -67,6 +95,7 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
             mtxtviewMessage = view.findViewById(R.id.txtviewMessage);
             mtxtDateMessage = view.findViewById(R.id.txtDateMessage);
             mimageViewedMessage = view.findViewById(R.id.imageViewedMessage);
+            mlinearLayouthMessage = view.findViewById(R.id.linearLayouthMessage);
             viewHolder =view;
         }
     }
