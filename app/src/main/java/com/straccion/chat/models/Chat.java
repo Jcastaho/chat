@@ -1,20 +1,42 @@
 package com.straccion.chat.models;
 
+import java.util.ArrayList;
+
 public class Chat {
     private String idUser1;
     private String idUser2;
     private boolean isWriting;
     private long timestamp;
-
+    private String id;
+    private ArrayList<String>ids;
 
     public Chat(){
 
     }
-    public Chat(String idUser1, String idUser2, boolean isWriting, long timestamp) {
+
+    public Chat(String idUser1, String idUser2, boolean isWriting, long timestamp, String id, ArrayList<String> ids) {
         this.idUser1 = idUser1;
         this.idUser2 = idUser2;
         this.isWriting = isWriting;
         this.timestamp = timestamp;
+        this.id = id;
+        this.ids = ids;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public ArrayList<String> getIds() {
+        return ids;
+    }
+
+    public void setIds(ArrayList<String> ids) {
+        this.ids = ids;
     }
 
     public String getIdUser1() {

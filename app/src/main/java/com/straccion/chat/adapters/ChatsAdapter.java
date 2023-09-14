@@ -16,6 +16,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Picasso;
 import com.straccion.chat.R;
 import com.straccion.chat.models.Chat;
+import com.straccion.chat.providers.AuthProvider;
 import com.straccion.chat.providers.UserProvider;
 
 import de.hdodenhof.circleimageview.CircleImageView;
@@ -24,19 +25,26 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
 
     Context contexto;
     UserProvider mUserProvider;
+    AuthProvider mAuthProvider;
+
 
     public ChatsAdapter(FirestoreRecyclerOptions<Chat> options, Context context){
         super(options);
         this.contexto = context;
         mUserProvider = new UserProvider();
+        mAuthProvider = new AuthProvider();
     }
 
     @Override
     protected void onBindViewHolder(@NonNull ViewHolder holder, int position, @NonNull Chat chat) {
 
         DocumentSnapshot document = getSnapshots().getSnapshot(position);
-        String chatId = document.getId();
-        getUserInfo(chatId, holder);
+        final String ChatId = document.getId();
+        if (mAuthProvider.getUid().equals(chat.getIdUser1())){
+            getUserInfo(chat.getIdUser2(), holder);
+        }else {
+            getUserInfo(chat.getIdUser1(), holder);
+        }
 
     }
 
@@ -81,8 +89,6 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
             mtxtLastMessageChat = view.findViewById(R.id.txtLastMessageChat);
             mcircleImageChat = view.findViewById(R.id.circleImageChat);
             ViewHolder =view;
-
         }
-
     }
 }

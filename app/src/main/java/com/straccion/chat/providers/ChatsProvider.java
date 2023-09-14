@@ -6,18 +6,27 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.straccion.chat.models.Chat;
 
+import java.util.ArrayList;
+
 public class ChatsProvider {
     CollectionReference mCollection;
 
-    public ChatsProvider(){
+    public ChatsProvider() {
         mCollection = FirebaseFirestore.getInstance().collection("Chats");
     }
-    public void create(Chat chat){
-        mCollection.document(chat.getIdUser1()).collection("Users").document(chat.getIdUser2()).set(chat);
-        mCollection.document(chat.getIdUser2()).collection("Users").document(chat.getIdUser1()).set(chat);
+
+    public void create(Chat chat) {
+        mCollection.document(chat.getIdUser1() + chat.getIdUser2()).set(chat);
     }
 
-    public Query getAll(String idUser){
-        return mCollection.document(idUser).collection("Users");
+    public Query getAll(String idUser) {
+        return mCollection.whereArrayContains("ids", idUser);
+    }
+
+    public Query getChatByUs1andUs2(String idUser1, String idUser2) {
+        ArrayList<String> ids = new ArrayList<>();
+        ids.add(idUser1 + idUser2);
+        ids.add(idUser2 + idUser1);
+        return mCollection.whereIn("id", ids);
     }
 }
