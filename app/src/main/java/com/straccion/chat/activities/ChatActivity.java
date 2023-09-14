@@ -16,13 +16,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.firebase.ui.firestore.FirestoreRecyclerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 import com.straccion.chat.R;
+import com.straccion.chat.adapters.MessagesAdapter;
 import com.straccion.chat.models.Chat;
 import com.straccion.chat.models.Message;
 import com.straccion.chat.providers.AuthProvider;
@@ -48,7 +51,7 @@ public class ChatActivity extends AppCompatActivity {
     AuthProvider mAuthProvider;
     ChatsProvider mChatsProvider;
     UserProvider mUserProvider;
-    //MessageAdapter mAdapter;
+    MessagesAdapter mAdapter;
 
     EditText mtxtEditMessaje;
     ImageView mimageViewSendMessage;
@@ -57,6 +60,7 @@ public class ChatActivity extends AppCompatActivity {
     TextView mtxtRelativeTime;
     ImageView mimageViewBack;
     RecyclerView mrecyclerViewMessage;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,6 +96,24 @@ public class ChatActivity extends AppCompatActivity {
         });
 
     }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        Query query = mMessageprovider.getMessageByChat(mExtraIdChat);
+        FirestoreRecyclerOptions<Message> options =
+                new FirestoreRecyclerOptions.Builder<Message>().setQuery(query, Message.class).build();
+        mAdapter = new MessagesAdapter(options, ChatActivity.this);
+        mrecyclerViewMessage.setAdapter(mAdapter);
+        mAdapter.startListening();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        mAdapter.stopListening();
+    }
+
 
     private void sendMessage() {
         String mensaje = mtxtEditMessaje.getText().toString();
