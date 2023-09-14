@@ -19,7 +19,9 @@ import android.widget.Toast;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 import com.straccion.chat.R;
 import com.straccion.chat.models.Chat;
 import com.straccion.chat.models.Message;
@@ -132,8 +134,53 @@ public class ChatActivity extends AppCompatActivity {
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         mActionBarView = inflater.inflate(resource, null);
         actionBar.setCustomView(mActionBarView);
+        mcircleImageProfile = mActionBarView.findViewById(R.id.circleImageProfile);
+        mtxtnombreUs = mActionBarView.findViewById(R.id.txtnombreUs);
+        mtxtRelativeTime = mActionBarView.findViewById(R.id.txtRelativeTime);
+        mimageViewBack = mActionBarView.findViewById(R.id.imageViewBack);
+        mimageViewBack.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        getUserInfo();
 
     }
+    private void getUserInfo() {
+        String idUserInfo = "";
+        if (mAuthProvider.getUid().equals(mExtraIdUser1)){
+            idUserInfo = mExtraIdUser2;
+        }else {
+            idUserInfo = mExtraIdUser1;
+        }
+        mUserProvider.getUser(idUserInfo).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                if (documentSnapshot.exists()){
+                    if (documentSnapshot.contains("nombreUsuario")){
+                        String nombreUsuario = documentSnapshot.getString("nombreUsuario");
+                        mtxtnombreUs.setText(nombreUsuario);
+                    }
+                }
+                if (documentSnapshot.exists()){
+                    if (documentSnapshot.contains("imageProfile")){
+                        String imageProfile = documentSnapshot.getString("imageProfile");
+                        if (imageProfile != null){
+                            if (!imageProfile.equals("")){
+                                Picasso.get().load(imageProfile).into(mcircleImageProfile);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+    }
+
+
+
 
     private void checkIfChatExist(){
         mChatsProvider.getChatByUs1andUs2(mExtraIdUser1, mExtraIdUser2).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
@@ -142,15 +189,13 @@ public class ChatActivity extends AppCompatActivity {
                 int size = queryDocumentSnapshots.size();
                 if (size == 0){
                     createChat();
-                    Toast.makeText(ChatActivity.this, "el chat no existe", Toast.LENGTH_SHORT).show();
-                    //mExtraIdChat = queryDocumentSnapshots.getDocuments().get(0).getId();
                 }else {
-                    Toast.makeText(ChatActivity.this, "el chat si existe", Toast.LENGTH_SHORT).show();
-                    //mExtraIdChat = queryDocumentSnapshots.getDocuments().get(0).getId();
+                    mExtraIdChat = queryDocumentSnapshots.getDocuments().get(0).getId();
                 }
             }
         });
     }
+
 
 
     private void createChat() {
