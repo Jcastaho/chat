@@ -1,6 +1,7 @@
 package com.straccion.chat.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.squareup.picasso.Picasso;
 import com.straccion.chat.R;
+import com.straccion.chat.activities.ChatActivity;
 import com.straccion.chat.models.Chat;
 import com.straccion.chat.providers.AuthProvider;
 import com.straccion.chat.providers.UserProvider;
@@ -26,6 +28,10 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
     Context contexto;
     UserProvider mUserProvider;
     AuthProvider mAuthProvider;
+
+
+
+
 
 
     public ChatsAdapter(FirestoreRecyclerOptions<Chat> options, Context context){
@@ -45,7 +51,20 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
         }else {
             getUserInfo(chat.getIdUser1(), holder);
         }
+        holder.viewHolder.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToChatActivity(ChatId, chat.getIdUser1(), chat.getIdUser2());
+            }
+        });
+    }
 
+    private void goToChatActivity(String chatId, String idUser1, String idUser2) {
+        Intent intent = new Intent(contexto, ChatActivity.class);
+        intent.putExtra("idChat", chatId);
+        intent.putExtra("idUser1", idUser1);
+        intent.putExtra("idUser2", idUser2);
+        contexto.startActivity(intent);
     }
 
     private void getUserInfo(String idUser, ViewHolder holder){
@@ -78,17 +97,18 @@ public class ChatsAdapter extends FirestoreRecyclerAdapter<Chat, ChatsAdapter.Vi
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder{
+
+        View viewHolder;
         TextView mtxtnombreUsChat;
         TextView mtxtLastMessageChat;
         CircleImageView mcircleImageChat;
-        View ViewHolder;
 
         public ViewHolder(View view){
             super(view);
             mtxtnombreUsChat = view.findViewById(R.id.txtnombreUsChat);
             mtxtLastMessageChat = view.findViewById(R.id.txtLastMessageChat);
             mcircleImageChat = view.findViewById(R.id.circleImageChat);
-            ViewHolder =view;
+            viewHolder =view;
         }
     }
 }
