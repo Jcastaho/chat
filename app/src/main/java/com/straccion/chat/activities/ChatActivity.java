@@ -79,8 +79,11 @@ public class ChatActivity extends AppCompatActivity {
         mtxtEditMessaje = findViewById(R.id.txtEditMessaje);
 
         mLinearLayoutManager = new LinearLayoutManager(ChatActivity.this);
-        mLinearLayoutManager.setStackFromEnd(false);
+        mLinearLayoutManager.setReverseLayout(true);
+        mLinearLayoutManager.setStackFromEnd(true);
         mrecyclerViewMessage.setLayoutManager(mLinearLayoutManager);
+
+
 
 
         mExtraIdUser1 = getIntent().getStringExtra("idUser1");
@@ -103,18 +106,42 @@ public class ChatActivity extends AppCompatActivity {
     @Override
     public void onStart() {
         super.onStart();
-        Query query = mMessageprovider.getMessageByChat(mExtraIdChat);
-        FirestoreRecyclerOptions<Message> options =
-                new FirestoreRecyclerOptions.Builder<Message>().setQuery(query, Message.class).build();
-        mAdapter = new MessagesAdapter(options, ChatActivity.this);
-        mrecyclerViewMessage.setAdapter(mAdapter);
-        mAdapter.startListening();
+        if (mAdapter != null){
+            mAdapter.startListening();
+        }
     }
 
     @Override
     public void onStop() {
         super.onStop();
         mAdapter.stopListening();
+    }
+
+    private void getMessageChat(){
+        Query query = mMessageprovider.getMessageByChat(mExtraIdChat);
+        FirestoreRecyclerOptions<Message> options =
+                new FirestoreRecyclerOptions.Builder<Message>().setQuery(query, Message.class).build();
+        mAdapter = new MessagesAdapter(options, ChatActivity.this);
+        mrecyclerViewMessage.setAdapter(mAdapter);
+        mAdapter.startListening();
+
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onItemRangeInserted(int positionStart, int itemCount) {
+                super.onItemRangeInserted(positionStart, itemCount);
+
+                int numeroMensajes = mAdapter.getItemCount();
+                int lastMessagePosition = mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
+
+                if (lastMessagePosition == -1 || lastMessagePosition == (positionStart - 1)) {
+                    // Si ya estamos en la parte inferior, desplázate hacia el nuevo elemento
+                    mrecyclerViewMessage.scrollToPosition(positionStart);
+                }else {
+                    mrecyclerViewMessage.scrollToPosition(positionStart);
+                }
+            }
+        });
+
     }
 
 
@@ -139,7 +166,6 @@ public class ChatActivity extends AppCompatActivity {
                 public void onComplete(@NonNull Task<Void> task) {
                     if (task.isSuccessful()){
                         mtxtEditMessaje.setText("");
-                        Toast.makeText(ChatActivity.this, "El mensaje se creo correctamente", Toast.LENGTH_SHORT).show();
                     }else {
                         Toast.makeText(ChatActivity.this, "El mensaje no se pudo crear", Toast.LENGTH_SHORT).show();
                     }
@@ -216,6 +242,7 @@ public class ChatActivity extends AppCompatActivity {
                     createChat();
                 }else {
                     mExtraIdChat = queryDocumentSnapshots.getDocuments().get(0).getId();
+                    getMessageChat();
                 }
             }
         });
@@ -235,5 +262,7 @@ public class ChatActivity extends AppCompatActivity {
         ids.add(mExtraIdUser2);
         chat.setIds(ids);
         mChatsProvider.create(chat);
+        mExtraIdChat = chat.getId();
+        getMessageChat();
     }
 }

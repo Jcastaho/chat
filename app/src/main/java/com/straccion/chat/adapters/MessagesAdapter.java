@@ -2,6 +2,7 @@ package com.straccion.chat.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +48,7 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
         DocumentSnapshot document = getSnapshots().getSnapshot(position);
         String messageId = document.getId();
         holder.mtxtviewMessage.setText(message.getMessage());
-        String relativeTime = RelativeTime.getTimeAgo(message.getTimestamp(), contexto);
+        String relativeTime = RelativeTime.timeFormatAMPM(message.getTimestamp(), contexto);
         holder.mtxtDateMessage.setText(relativeTime);
 
         if (message.getIdsender().equals(mAuthProvider.getUid())){
@@ -61,6 +62,8 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
             holder.mlinearLayouthMessage.setPadding(30,20,25,20);
             holder.mlinearLayouthMessage.setBackground(ResourcesCompat.getDrawable(contexto.getResources(), R.drawable.rounded_linear_layout, null));
             holder.mimageViewedMessage.setVisibility(View.VISIBLE);
+            holder.mtxtviewMessage.setTextColor(Color.WHITE);
+            holder.mtxtDateMessage.setTextColor(Color.LTGRAY);
         }else {
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                     ViewGroup.LayoutParams.WRAP_CONTENT,
@@ -69,9 +72,11 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
             params.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
             params.setMargins(0, 0, 150, 0);
             holder.mlinearLayouthMessage.setLayoutParams(params);
-            holder.mlinearLayouthMessage.setPadding(30,20,-40,20);
+            holder.mlinearLayouthMessage.setPadding(30,20,30,20);
             holder.mlinearLayouthMessage.setBackground(ResourcesCompat.getDrawable(contexto.getResources(), R.drawable.rounded_linear_layout_grey, null));
-            holder.mimageViewedMessage.setVisibility(View.INVISIBLE);
+            holder.mimageViewedMessage.setVisibility(View.GONE);
+            holder.mtxtviewMessage.setTextColor(Color.DKGRAY);
+            holder.mtxtDateMessage.setTextColor(Color.LTGRAY);
         }
     }
 
