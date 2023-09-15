@@ -129,6 +129,7 @@ public class ChatActivity extends AppCompatActivity {
             @Override
             public void onItemRangeInserted(int positionStart, int itemCount) {
                 super.onItemRangeInserted(positionStart, itemCount);
+                updateViewed();
 
                 int numeroMensajes = mAdapter.getItemCount();
                 int lastMessagePosition = mLinearLayoutManager.findLastCompletelyVisibleItemPosition();
@@ -243,11 +244,29 @@ public class ChatActivity extends AppCompatActivity {
                 }else {
                     mExtraIdChat = queryDocumentSnapshots.getDocuments().get(0).getId();
                     getMessageChat();
+                    updateViewed();
                 }
             }
         });
     }
 
+    private void updateViewed() {
+        String idSender = "";
+        if (mAuthProvider.getUid().equals(mExtraIdUser1)){
+            idSender = mExtraIdUser2;
+        }else {
+            idSender = mExtraIdUser1;
+        }
+
+        mMessageprovider.getMessageByChatandsender(mExtraIdChat, idSender).get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                for(DocumentSnapshot document : queryDocumentSnapshots.getDocuments()){
+                    mMessageprovider.updateViewes(document.getId(), true);
+                }
+            }
+        });
+    }
 
 
     private void createChat() {

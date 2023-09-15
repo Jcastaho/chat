@@ -78,6 +78,11 @@ public class MessagesAdapter extends FirestoreRecyclerAdapter<Message, MessagesA
             holder.mtxtviewMessage.setTextColor(Color.DKGRAY);
             holder.mtxtDateMessage.setTextColor(Color.LTGRAY);
         }
+        if (message.isViewed()){
+            holder.mimageViewedMessage.setImageResource(R.drawable.icon_check_blue_light);
+        }else {
+            holder.mimageViewedMessage.setImageResource(R.drawable.icon_check_grey);
+        }
     }
 
     @NonNull
