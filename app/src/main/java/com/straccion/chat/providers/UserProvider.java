@@ -4,6 +4,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.straccion.chat.models.User;
@@ -23,6 +24,8 @@ public class UserProvider {
 
     public Task<DocumentSnapshot> getUser(String id){ return mCollection.document(id).get();}
 
+    public DocumentReference getUserRealTime(String id){ return mCollection.document(id);}
+
 
     public Task<Void> create(User user){
         return mCollection.document(user.getId()).set(user);
@@ -37,6 +40,13 @@ public class UserProvider {
         map.put("imageProfile", user.getImageProfile());
         map.put("imageCover", user.getImageCover());
         return mCollection.document(user.getId()).update(map);
+    }
+
+    public Task<Void> updateOnline(String idUser, boolean status) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("online", status);
+        map.put("lastConnect", new Date().getTime());
+        return mCollection.document(idUser).update(map);
     }
 
 }

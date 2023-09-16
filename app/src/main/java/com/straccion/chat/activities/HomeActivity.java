@@ -16,12 +16,14 @@ import com.straccion.chat.fragments.HomeFragment;
 import com.straccion.chat.fragments.ProfileFragment;
 import com.straccion.chat.providers.AuthProvider;
 import com.straccion.chat.providers.TokenProvider;
+import com.straccion.chat.providers.UserProvider;
 
 public class HomeActivity extends AppCompatActivity {
 
     BottomNavigationView bottomNavigation;
     TokenProvider mTokenProvider;
     AuthProvider mAuthProvider;
+    UserProvider mUserProvider;
 
 
     @Override
@@ -33,14 +35,27 @@ public class HomeActivity extends AppCompatActivity {
         bottomNavigation.setOnNavigationItemSelectedListener(navigationItemSelectedListener);
         mTokenProvider = new TokenProvider();
         mAuthProvider = new AuthProvider();
+        mUserProvider = new UserProvider();
         openFragment(new HomeFragment());
         createToken();
 
     }
 
-    /**
-     *
-     */
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateOnline(true);
+    }
+
+    private void updateOnline(boolean status) {
+        mUserProvider.updateOnline(mAuthProvider.getUid(), status);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        updateOnline(false);
+    }
 
     public void openFragment(Fragment fragment) {
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();

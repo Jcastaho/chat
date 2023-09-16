@@ -34,18 +34,19 @@
         <TextView
             android:id="@+id/txtDateMessage"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="16dp"
             android:text="Fecha"
             android:textSize="9dp"
             android:textColor="@color/Gris"
             android:layout_marginLeft="5dp"
-            android:layout_gravity="bottom"/>
+            android:textAlignment="center" />
 
         <ImageView
             android:id="@+id/imageViewedMessage"
-            android:layout_width="25dp"
-            android:layout_height="20dp"
+            android:layout_width="29dp"
+            android:layout_height="16dp"
             android:src="@drawable/icon_check_grey"
+
             android:layout_gravity="bottom"/>
 
     </LinearLayout>

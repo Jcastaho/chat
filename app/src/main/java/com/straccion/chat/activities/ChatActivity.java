@@ -1,6 +1,7 @@
 package com.straccion.chat.activities;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -21,6 +22,8 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
@@ -32,6 +35,7 @@ import com.straccion.chat.providers.AuthProvider;
 import com.straccion.chat.providers.ChatsProvider;
 import com.straccion.chat.providers.MessageProvider;
 import com.straccion.chat.providers.UserProvider;
+import com.straccion.chat.utils.RelativeTime;
 
 import org.checkerframework.checker.units.qual.C;
 
@@ -190,6 +194,7 @@ public class ChatActivity extends AppCompatActivity {
         mtxtnombreUs = mActionBarView.findViewById(R.id.txtnombreUs);
         mtxtRelativeTime = mActionBarView.findViewById(R.id.txtRelativeTime);
         mimageViewBack = mActionBarView.findViewById(R.id.imageViewBack);
+
         mimageViewBack.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -207,13 +212,26 @@ public class ChatActivity extends AppCompatActivity {
         }else {
             idUserInfo = mExtraIdUser1;
         }
-        mUserProvider.getUser(idUserInfo).addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+        mUserProvider.getUserRealTime(idUserInfo).addSnapshotListener(new EventListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
+            public void onEvent(@Nullable DocumentSnapshot documentSnapshot, @Nullable FirebaseFirestoreException error) {
                 if (documentSnapshot.exists()){
                     if (documentSnapshot.contains("nombreUsuario")){
                         String nombreUsuario = documentSnapshot.getString("nombreUsuario");
                         mtxtnombreUs.setText(nombreUsuario);
+                    }
+                }
+                if (documentSnapshot.exists()){
+                    if (documentSnapshot.contains("online")){
+                        boolean online = documentSnapshot.getBoolean("online");
+                        if (online){
+                            mtxtRelativeTime.setText("En línea");
+                        }
+                        else if (documentSnapshot.contains("lastConnect")){
+                            long lastConnect = documentSnapshot.getLong("lastConnect");
+                            String relativeTime = RelativeTime.getTimeAgo(lastConnect, ChatActivity.this);
+                            mtxtRelativeTime.setText(relativeTime);
+                        }
                     }
                 }
                 if (documentSnapshot.exists()){
